@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
-import { MobSpawn, User } from '@prisma/client';
 import { use } from 'passport';
 
 @Injectable()
@@ -9,11 +8,7 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async getUsers() {
-    return await this.prisma.user.findMany({
-      include: {
-        guild: true,
-      },
-    });
+    return await this.prisma.user.findMany({});
   }
 
   async editUser(
