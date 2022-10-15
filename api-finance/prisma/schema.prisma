@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash  String
+
+  account Account[]
+  savingAccount SavingAccount[]
+  contacts Contact[]
+  categories Category[]
+
+  @@map("users")
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  balance Int
+  transactions Transaction[]
+  fixedIncomes FixedIncome[]
+  fixedExpenses FixedExpense[]
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@map("account")
+}
+
+model SavingAccount {
+   id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  goalName String
+  goalAmount Int
+  balance Int
+  transactions Transaction[]
+  fixedIncomes FixedIncome[]
+  fixedExpenses FixedExpense[]
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@map("savingAccount")
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category Category[]
+
+  title String
+  ammount Int
+
+  account Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  savingAccount SavingAccount @relation(fields: [savingAccountId], references: [id])
+  savingAccountId Int
+
+  contact Contact @relation(fields: [contactId], references: [id])
+  contactId Int
+
+  @@map("transaction")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  transactions Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@map("category")
+}
+
+model FixedExpense {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  amount Int
+  frequency String
+  startDate DateTime
+  endDate DateTime
+
+  account Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  savingAccount SavingAccount @relation(fields: [savingAccountId], references: [id])
+  savingAccountId Int
+
+  @@map("fixedExpense")
+}
+
+model FixedIncome {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  amount Int
+  frequency String
+  startDate DateTime
+  endDate DateTime
+
+  account Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  savingAccount SavingAccount @relation(fields: [savingAccountId], references: [id])
+  savingAccountId Int
+
+   @@map("fixedIncome")
+}
+
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  transactions Transaction[]
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@map("contact")
+}
